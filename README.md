@@ -1,0 +1,2 @@
+# grub
+This is GRUB.
