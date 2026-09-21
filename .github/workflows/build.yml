@@ -1,0 +1,51 @@
+name: GRUB Nitrux Deb
+
+on:
+  workflow_dispatch:
+    inputs:
+      packageCloudRepo:
+        description: Package Cloud repository
+        required: true
+        default: testing
+        type: choice
+        options:
+          - testing
+
+permissions:
+  contents: read
+
+jobs:
+  build-amd64:
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:stable
+      env:
+        DEBIAN_FRONTEND: noninteractive
+        PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+
+    steps:
+      - name: Install checkout dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates git nodejs
+
+      - uses: actions/checkout@v4
+
+      - name: Install GRUB build dependencies
+        run: ./scripts/install-build-deps.sh
+
+      - name: Install Package Cloud client
+        run: |
+          apt-get install -y --no-install-recommends ruby-full
+          gem install --no-document package_cloud
+
+      - name: Build GRUB packages
+        run: ./scripts/build-deb.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: grub-deb-amd64
+          path: ./build/*.deb
+
+      - name: Publish GRUB packages
+        run: package_cloud push nitrux/${{ inputs.packageCloudRepo }}/debian/duke ./build/*.deb

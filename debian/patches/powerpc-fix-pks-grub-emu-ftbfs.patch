@@ -1,0 +1,43 @@
+From: Sudhakar Kuppusamy <sudhakar@linux.ibm.com>
+Date: Fri, 27 Feb 2026 19:11:43 +0530
+Subject:powerpc_ieee1275: Excluding the PKS for grub-emu on 32-bit
+ PowerPC
+
+Configuring the build with --with-platform=emu fails on 32-bit PowerPC with:
+
+/usr/bin/ld: appendedsig.module: in function `grub_mod_init':
+/home/glaubitz/grub/grub-core/commands/appendedsig/appendedsig.c:1615:(.text+0x2ab4): undefined reference to `grub_pks_get_keystore'
+/usr/bin/ld: appendedsig.module: in function `create_dbs_from_pks':
+/home/glaubitz/grub/grub-core/commands/appendedsig/appendedsig.c:1400:(.text+0x2c3c): undefined reference to `grub_pks_free_data'
+collect2: error: ld returned 1 exit status
+
+Fixing this by excluding the Platform Keystore (PKS) for grub-emu on 32-bit PowerPC.
+
+Reported-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Signed-off-by: Sudhakar Kuppusamy <sudhakar@linux.ibm.com>
+
+Origin: upstream, https://gitlab.freedesktop.org/gnu-grub/grub/-/commit/aaaf5037887ea33394975f9e86360476bb6fa6f5
+Bug-Debian: https://bugs.debian.org/1127348
+Forwarded: https://lists.gnu.org/archive/html/grub-devel/2026-02/msg00077.html
+Last-Update: 2026-07-11
+Patch-Name: powerpc-fix-pks-grub-emu-ftbfs.patch
+---
+ include/grub/powerpc/ieee1275/platform_keystore.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/grub/powerpc/ieee1275/platform_keystore.h b/include/grub/powerpc/ieee1275/platform_keystore.h
+index 931ada224..f78e44953 100644
+--- a/include/grub/powerpc/ieee1275/platform_keystore.h
++++ b/include/grub/powerpc/ieee1275/platform_keystore.h
+@@ -96,7 +96,7 @@ struct grub_pks
+ };
+ typedef struct grub_pks grub_pks_t;
+ 
+-#if defined(__powerpc__)
++#if defined(__powerpc__) && !defined(GRUB_MACHINE_EMU)
+ /* Initialization of the Platform Keystore. */
+ extern void
+ grub_pks_keystore_init (void);
+-- 
+2.51.0
+
