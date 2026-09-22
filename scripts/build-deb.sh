@@ -16,11 +16,18 @@ PACKAGE_NAMES=(
 	grub2-common
 )
 
+PACKAGE_OPTIONS=()
+for package_name in "${PACKAGE_NAMES[@]}"; do
+	PACKAGE_OPTIONS+=("-p${package_name}")
+done
+
 cd "${REPO_ROOT}"
 
 mkdir -p "${BUILD_DIR}"
 rm -f -- "${BUILD_DIR}"/*.deb
 
+DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:+${DEB_BUILD_OPTIONS} }nocheck" \
+	DH_OPTIONS="${PACKAGE_OPTIONS[*]}" \
 debuild -b -uc -us
 
 shopt -s nullglob
