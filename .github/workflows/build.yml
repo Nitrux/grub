@@ -26,6 +26,19 @@ jobs:
         PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
     steps:
+      - name: Configure snapshot APT sources
+        run: |
+          echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/10no-check-valid-until
+          cat <<EOF > /etc/apt/sources.list.d/debian.sources
+          Types: deb
+          URIs: http://snapshot.debian.org/archive/debian/20261013T082854Z
+          Suites: testing testing-updates
+          Components: main non-free non-free-firmware contrib
+          Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+          Architectures: amd64
+          EOF
+          apt-get update
+
       - name: Install checkout dependencies
         run: |
           apt-get update
