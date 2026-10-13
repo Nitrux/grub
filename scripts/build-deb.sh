@@ -31,7 +31,7 @@ rm -f -- "${BUILD_DIR}"/*.deb
 
 DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:+${DEB_BUILD_OPTIONS} }nocheck" \
 	DH_OPTIONS="${PACKAGE_OPTIONS[*]}" \
-debuild -b -uc -us
+debuild --preserve-envvar=SB_KEY --preserve-envvar=SB_CERT -b -uc -us
 
 shopt -s nullglob
 PACKAGES=()
