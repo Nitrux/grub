@@ -1,0 +1,47 @@
+commit ce6f2b57f5450a8239022dcbfb2d750f273b83cb
+Author: Nicholas Vinson <nvinson234@gmail.com>
+Date:   Tue Feb 24 19:48:42 2026 -0500
+
+    util/resolve: Save str[r]chr() ret val to const data ptr
+    
+    With glibc-2.43 implementing the C23 standard, strrchr() and strchr()
+    now return "const char *" when its first argument is "const char *".
+    
+    The fix is update all pointers receiving strrchr() and strchr()'s return
+    values so that they are now "const char *" instead of "char *".
+    
+    Signed-off-by: Nicholas Vinson <nvinson234@gmail.com>
+    Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+
+diff --git a/util/resolve.c b/util/resolve.c
+index b6e26312f..254379195 100644
+--- a/util/resolve.c
++++ b/util/resolve.c
+@@ -138,12 +138,12 @@ read_dep_list (FILE *fp)
+ static char *
+ get_module_name (const char *str)
+ {
+-  char *base;
+-  char *ext;
++  const char *base;
++  const char *ext;
+ 
+   base = strrchr (str, '/');
+   if (! base)
+-    base = (char *) str;
++    base = str;
+   else
+     base++;
+ 
+@@ -164,9 +164,9 @@ get_module_name (const char *str)
+ static char *
+ get_module_path (const char *prefix, const char *str)
+ {
+-  char *dir;
++  const char *dir;
+   char *base;
+-  char *ext;
++  const char *ext;
+   char *ret;
+ 
+   ext = strrchr (str, '.');

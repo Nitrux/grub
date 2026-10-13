@@ -1,9 +1,6 @@
-version=3
+Version: 5
 
-# Official releases:
-opts=pgpsigurlmangle=s/$/.sig/ \
-https://ftp.gnu.org/gnu/grub/grub-([a-z0-9.~]+).tar.xz debian uupdate
-
-# Betas and pre-releases:
-#opts=pgpsigurlmangle=s/$/.sig/ \
-#https://alpha.gnu.org/gnu/grub/grub-([a-z0-9.~]+).tar.xz debian uupdate
+Source: https://gitlab.freedesktop.org/api/v4/projects/gnu-grub%2Fgrub/releases
+Matching-Pattern: https://[^ "()]*/grub-@ANY_VERSION@\.tar\.xz
+Pgpsigurlmangle: s/$/.sig/
+Searchmode: plain

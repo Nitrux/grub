@@ -1,0 +1,41 @@
+commit 9922ed133c2c754ec9f37198da2b3e3e8a4fd5ff
+Author: Nicholas Vinson <nvinson234@gmail.com>
+Date:   Tue Mar 3 21:41:13 2026 -0500
+
+    include/grub/i386/pc/int.h: Move GRUB_MACHINE_PCBIOS ifdef
+    
+    Modern compilers are becoming more strict and starting to warn when
+    certain attributes are ignored. The regparam attribute is such an
+    attribute.
+    
+    Moreover, the function
+    
+      void EXPORT_FUNC (grub_bios_interrupt) (grub_uint8_t intno, struct grub_bios_int_registers *regs) __attribute__ ((regparm(3)));
+    
+    is only defined with the i386-pc target.
+    
+    Update include/grub/i386/pc/int.h so grub_bios_interrupt() is only
+    declared when GRUB_MACHINE_PCBIOS is defined. This addresses the issue
+    of declaring a function that is not defined for non-i386-pc targets and
+    prevents the "attribute ignored" diagnostic message.
+    
+    Signed-off-by: Nicholas Vinson <nvinson234@gmail.com>
+    Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+
+diff --git a/include/grub/i386/pc/int.h b/include/grub/i386/pc/int.h
+index a60104001..ee13195d3 100644
+--- a/include/grub/i386/pc/int.h
++++ b/include/grub/i386/pc/int.h
+@@ -22,11 +22,11 @@
+ #include <grub/symbol.h>
+ #include <grub/i386/pc/int_types.h>
+ 
++#ifdef GRUB_MACHINE_PCBIOS
+ void EXPORT_FUNC (grub_bios_interrupt) (grub_uint8_t intno,
+ 					struct grub_bios_int_registers *regs)
+      __attribute__ ((regparm(3)));
+ 
+-#ifdef GRUB_MACHINE_PCBIOS
+ extern struct grub_i386_idt *EXPORT_VAR(grub_realidt);
+ #endif
+ 

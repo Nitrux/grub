@@ -36,6 +36,8 @@ Build-Depends: debhelper-compat (= 13),
  libefiboot-dev [i386 amd64 x32 armel armhf arm64 riscv64 loong64],
  libefivar-dev [i386 amd64 x32 armel armhf arm64 riscv64 loong64],
  autoconf-archive,
+ sbsigntool [amd64],
+ openssl,
 Build-Conflicts: autoconf2.13, libzfs-dev, libnvpair-dev
 Standards-Version: 3.9.6
 Homepage: https://www.gnu.org/software/grub/
@@ -326,8 +328,8 @@ Description: GRand Unified Bootloader, version 2 (EFI-IA32 signing template)
 
 Package: grub-efi-amd64-bin
 Architecture: i386 any-amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, grub2-common (= ${binary:Version}), grub-efi-amd64-unsigned
-Recommends: grub-efi-amd64-signed [amd64], efibootmgr [linux-any]
+Depends: ${shlibs:Depends}, ${misc:Depends}, grub2-common (= ${binary:Version}), grub-efi-amd64-signed
+Recommends: efibootmgr [linux-any]
 Replaces: grub2 (<< ${source:Version})
 Breaks: grub-efi-amd64-signed (<< 1+2.12~rc1)
 Multi-Arch: foreign
@@ -372,6 +374,26 @@ Description: GRand Unified Bootloader, version 2 (EFI-AMD64 images)
  will not automatically install GRUB as the active boot loader nor
  automatically update grub.cfg on upgrade unless grub-efi-amd64 is also
  installed.
+
+Package: grub-efi-amd64-signed
+Architecture: i386 any-amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, grub2-common (= ${binary:Version})
+Replaces: grub-efi-amd64-unsigned
+Breaks: grub-efi-amd64-unsigned
+Multi-Arch: foreign
+XB-Efi-Vendor: ${efi:Vendor}
+Description: GRand Unified Bootloader, version 2 (EFI-AMD64 signed images)
+ GRUB is a portable, powerful bootloader.  This version of GRUB is based on a
+ cleaner design than its predecessors, and provides the following new features:
+ .
+  - Scripting in grub.cfg using BASH-like syntax.
+  - Support for modern partition maps such as GPT.
+  - Modular generation of grub.cfg via update-grub.  Packages providing GRUB
+    add-ons can plug in their own script rules and trigger updates by invoking
+    update-grub.
+ .
+ This package contains GRUB images signed for use with UEFI Secure Boot on
+ EFI-AMD64 systems.
 
 Package: grub-efi-amd64-dbg
 Section: debug

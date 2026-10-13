@@ -70,3 +70,10 @@ grub-install-removable-shim.patch
 upstream/efi-chainloader-set-loaded-image-device-path.patch
 upstream/efi-linux-set-loaded-image-device-path.patch
 powerpc-fix-pks-grub-emu-ftbfs.patch
+upstream/0001-docs-grub-Document-serial-port-restrictions-under-lo.patch
+upstream/0002-term-serial-Reject-caller-supplied-port-addresses-un.patch
+upstream/fix-for-gcc-2.16-1.patch
+upstream/fix-for-gcc-2.16-2.patch
+upstream/fix-for-gcc-2.16-3.patch
+upstream/fix-for-gcc-2.16-4.patch
+upstream/efi-sb-Fix-boot-failure-when-shim-validation-is-disa.patch

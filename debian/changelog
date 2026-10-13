@@ -1,12 +1,14 @@
-grub2 (2.14-5+nitrux1) nitrux; urgency=medium
+grub2 (2.14-5+nitrux2) nitrux; urgency=medium
 
   * Build GRUB for Nitrux with x86-64-v3 optimizations.
   * Restrict the Nitrux build to the amd64 EFI packages and grub2-common.
   * Enable LUKS2 with Argon2id for encrypted Nitrux installations.
+  * Import Debian’s current GRUB packaging updates.
+  * Sign the amd64 EFI images and build grub-efi-amd64-signed.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 21 Sep 2026 15:13:32 -0600
 
-grub2 (2.14-4) UNRELEASED; urgency=medium
+grub2 (2.14-4) unstable; urgency=medium
 
   [ Trupti Shirsat ]
   * debian/patches: Fix grub-emu FTBFS on 32-bit powerpc due to PKS
@@ -15,7 +17,13 @@ grub2 (2.14-4) UNRELEASED; urgency=medium
   [ youwan Wang ]
   * debian/rules: serialize package build targets
 
- -- Steve McIntyre <93sam@debian.org>  Sun, 16 Aug 2026 18:56:30 +0100
+  [ Steve McIntyre ]
+  * Backport fix for serial-MMIO secure boot bypass (Closes: #1148741)
+  * Backport fixes for compilation with gcc-16 (Closes: #1128547)
+  * Backport fix for boot failure when shim validation is disabled
+    under secure boot (Closes: #1148719)
+
+ -- Steve McIntyre <93sam@debian.org>  Wed, 23 Sep 2026 21:39:45 +0100
 
 grub2 (2.14-3) unstable; urgency=medium
 

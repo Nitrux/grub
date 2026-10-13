@@ -17,6 +17,8 @@ permissions:
 jobs:
   build-amd64:
     runs-on: ubuntu-24.04
+    environment:
+      name: secure-boot
     container:
       image: debian:stable
       env:
@@ -39,7 +41,32 @@ jobs:
           apt-get install -y --no-install-recommends ruby-full
           gem install --no-document package_cloud
 
+      - name: Prepare Secure Boot signing files
+        env:
+          GRUB_SB_KEY_B64: ${{ secrets.GRUB_SB_KEY_B64 }}
+          GRUB_SB_CERT_B64: ${{ secrets.GRUB_SB_CERT_B64 }}
+        run: |
+          set -euo pipefail
+
+          test -n "${GRUB_SB_KEY_B64}"
+          test -n "${GRUB_SB_CERT_B64}"
+
+          signing_dir=/tmp/grub-signing
+          install -d -m 700 "${signing_dir}"
+
+          printf '%s' "${GRUB_SB_KEY_B64}" | base64 --decode > "${signing_dir}/grub.key"
+          printf '%s' "${GRUB_SB_CERT_B64}" | base64 --decode > "${signing_dir}/grub.crt"
+
+          chmod 600 "${signing_dir}/grub.key"
+          chmod 644 "${signing_dir}/grub.crt"
+
+          test -s "${signing_dir}/grub.key"
+          test -s "${signing_dir}/grub.crt"
+
       - name: Build GRUB packages
+        env:
+          SB_KEY: /tmp/grub-signing/grub.key
+          SB_CERT: /tmp/grub-signing/grub.crt
         run: ./scripts/build-deb.sh
 
       - uses: actions/upload-artifact@v4
@@ -49,3 +76,7 @@ jobs:
 
       - name: Publish GRUB packages
         run: package_cloud push nitrux/${{ inputs.packageCloudRepo }}/debian/duke ./build/*.deb
+
+      - name: Remove Secure Boot signing files
+        if: always()
+        run: rm -rf /tmp/grub-signing

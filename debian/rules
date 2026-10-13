@@ -69,6 +69,8 @@ substvars =
 AUTOGEN_DEB_FILES = config templates preinst postinst postrm dirs install links maintscript bash-completion
 
 BUILD_PACKAGES := $(strip $(shell dh_listpackages))
+SIGNED_PACKAGES := $(filter grub-efi-%-signed,$(BUILD_PACKAGES))
+BUILD_PACKAGES := $(filter-out $(SIGNED_PACKAGES),$(BUILD_PACKAGES))
 # REAL_PACKAGES build an actual grub variant (and therefore have both configure
 # and build stages). EXTRA_PACKAGES do not build grub but may depend on a
 # REAL_PACKAGE (and therefore only have a build stage)
@@ -135,6 +137,8 @@ debian/stamps/build-grub-efi-loong64 install/grub-efi-loong64: export SB_EFI_NAM
 debian/stamps/build-grub-efi-riscv64 install/grub-efi-riscv64: export SB_PLATFORM := riscv64-efi
 debian/stamps/build-grub-efi-riscv64 install/grub-efi-riscv64: export SB_EFI_NAME := riscv64
 SB_PACKAGE :=
+SB_KEY ?=
+SB_CERT ?=
 ifeq (yes,$(shell dpkg-vendor --derives-from Ubuntu && echo yes))
 ifeq ($(DEB_HOST_ARCH),amd64)
 SB_PACKAGE := grub-efi-amd64
@@ -178,6 +182,7 @@ debian/stamps/build-%: export DH_OPTIONS = -p$(package) -Bobj/$(package)
 install/%: package = $(subst install/,,$@)
 install/%: package_bin = $(package)-bin
 install/%: package_unsigned = $(package)-unsigned
+install/%: package_signed = $(package)-signed
 install/%: package_dbg = $(package)-dbg
 install/grub-emu: package_bin = grub-emu
 install/grub-emu: package_dbg = grub-emu-dbg
@@ -253,6 +258,12 @@ debian/stamps/build-grub-efi-ia32 debian/stamps/build-grub-efi-arm debian/stamps
 		obj/monolithic/$(package) \
 		$(DEB_HOST_ARCH) $(SB_PLATFORM) $(SB_EFI_NAME) \
 		$${grub_dir}/sbat.$(SB_EFI_VENDOR).csv $(SB_EFI_VENDOR)
+	if [ "$(package)" = "grub-efi-amd64" ]; then \
+		debian/sign-efi-images \
+			obj/monolithic/$(package) \
+			obj/monolithic/$(package)-signed \
+			"$(SB_KEY)" "$(SB_CERT)"; \
+	fi
 	touch $@
 
 debian/stamps/build-grub-xen-host-i386: PVBOOT_ARCH := i386
@@ -404,7 +415,13 @@ install/grub-pc install/grub-efi-ia32 install/grub-efi-amd64 install/grub-efi-ar
 	fi
 
 	set -e ; \
-	if [ -d "obj/monolithic/$(package)" ] ; then \
+	if [ "$(package)" = "grub-efi-amd64" ] ; then \
+		install -m 0755 -d debian/tmp-$(package_signed)/usr/lib/grub/$(SB_PLATFORM)-signed ; \
+		install -m 0644 -t debian/tmp-$(package_signed)/usr/lib/grub/$(SB_PLATFORM)-signed obj/monolithic/$(package)-signed/*.signed ; \
+ifneq (,$(filter grub-efi-amd64-signed-template,$(BUILD_PACKAGES)))
+		debian/signing-template.generate "$(package)" ; \
+endif
+	elif [ -d "obj/monolithic/$(package)" ] ; then \
 		install -m 0755 -d debian/$(package_unsigned)/usr/lib/grub/$(SB_PLATFORM)/monolithic ; \
 		install -m 0644 -t debian/$(package_unsigned)/usr/lib/grub/$(SB_PLATFORM)/monolithic obj/monolithic/$(package)/*.efi ; \
 		debian/signing-template.generate "$(package)" ; \
@@ -549,6 +566,11 @@ ifneq (,$(PLATFORM_PACKAGES))
 		dh_install -p$$package --sourcedir=debian/tmp-$$package; \
 		dh_install -p$$package-bin --sourcedir=debian/tmp-$$package; \
 		dh_install -p$$package-dbg --sourcedir=debian/tmp-$$package; \
+	done
+endif
+ifneq (,$(SIGNED_PACKAGES))
+	set -e; for package in $(SIGNED_PACKAGES); do \
+		dh_install -p$$package --sourcedir=debian/tmp-$$package; \
 	done
 endif
 ifneq (,$(filter grub-emu,$(BUILD_PACKAGES)))

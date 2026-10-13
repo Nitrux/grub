@@ -12,7 +12,7 @@ BUILD_DIR="${BUILD_DIR:-${REPO_ROOT}/build}"
 PACKAGE_NAMES=(
 	grub-efi-amd64
 	grub-efi-amd64-bin
-	grub-efi-amd64-unsigned
+	grub-efi-amd64-signed
 	grub2-common
 )
 
@@ -22,6 +22,9 @@ for package_name in "${PACKAGE_NAMES[@]}"; do
 done
 
 cd "${REPO_ROOT}"
+
+: "${SB_KEY:?Set SB_KEY to the Secure Boot private key before building.}"
+: "${SB_CERT:?Set SB_CERT to the Secure Boot certificate before building.}"
 
 mkdir -p "${BUILD_DIR}"
 rm -f -- "${BUILD_DIR}"/*.deb
