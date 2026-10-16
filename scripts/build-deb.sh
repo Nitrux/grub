@@ -45,4 +45,22 @@ for package_name in "${PACKAGE_NAMES[@]}"; do
 done
 shopt -u nullglob
 
+signed_package=""
+for package in "${PACKAGES[@]}"; do
+	if [[ "$(basename "${package}")" == grub-efi-amd64-signed_*.deb ]]; then
+		signed_package="${package}"
+	fi
+done
+
+if [ -z "${signed_package}" ]; then
+	echo "Error: grub-efi-amd64-signed does not contain gcdx64.efi.signed." >&2
+	exit 1
+fi
+
+signed_package_contents="$(dpkg-deb --contents "${signed_package}")"
+if ! grep -Fq 'usr/lib/grub/x86_64-efi-signed/gcdx64.efi.signed' <<< "${signed_package_contents}"; then
+	echo "Error: grub-efi-amd64-signed does not contain gcdx64.efi.signed." >&2
+	exit 1
+fi
+
 mv -- "${PACKAGES[@]}" "${BUILD_DIR}/"

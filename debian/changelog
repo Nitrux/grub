@@ -1,3 +1,10 @@
+grub2 (2.14-5+nitrux3) nitrux; urgency=medium
+
+  * Include signed EFI images in grub-efi-amd64-signed.
+  * Reject signed GRUB packages without gcdx64.efi.signed.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 16 Oct 2026 01:19:57 -0600
+
 grub2 (2.14-5+nitrux2) nitrux; urgency=medium
 
   * Build GRUB for Nitrux with x86-64-v3 optimizations.

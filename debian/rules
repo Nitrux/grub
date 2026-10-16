@@ -308,7 +308,10 @@ ifneq (,$(PLATFORM_PACKAGES))
 endif
 ifneq (,$(SIGNED_PACKAGES))
 	set -e; for package in $(SIGNED_PACKAGES); do \
-		env -u DH_OPTIONS dh_install -p$$package --sourcedir=debian/tmp-$$package; \
+		install -m 0755 -d debian/$$package/usr/lib/grub/x86_64-efi-signed; \
+		install -m 0644 -t debian/$$package/usr/lib/grub/x86_64-efi-signed \
+			debian/tmp-$$package/usr/lib/grub/x86_64-efi-signed/*.signed; \
+		test -f debian/$$package/usr/lib/grub/x86_64-efi-signed/gcdx64.efi.signed; \
 	done
 endif
 ifneq (,$(filter grub2-common,$(BUILD_PACKAGES)))
