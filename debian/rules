@@ -240,6 +240,10 @@ install/grub-efi-amd64:
 	install -m 0644 -t debian/tmp-$(package_signed)/usr/lib/grub/$(SB_PLATFORM)-signed obj/monolithic/$(package)-signed/*.signed
 
 	set -e ; \
+	install -m 0755 -d debian/tmp-$(package_signed)/usr/share/grub ; \
+	openssl x509 -in "$(SB_CERT)" -outform DER -out debian/tmp-$(package_signed)/usr/share/grub/nitrux-secure-boot.cer
+
+	set -e ; \
 	for i in $(AUTOGEN_DEB_FILES) ; do \
 		> debian/$(package).$$i; \
 		$(call platform_subst,$$i.in,$(package),$$i); \
@@ -311,7 +315,11 @@ ifneq (,$(SIGNED_PACKAGES))
 		install -m 0755 -d debian/$$package/usr/lib/grub/x86_64-efi-signed; \
 		install -m 0644 -t debian/$$package/usr/lib/grub/x86_64-efi-signed \
 			debian/tmp-$$package/usr/lib/grub/x86_64-efi-signed/*.signed; \
+		install -m 0755 -d debian/$$package/usr/share/grub; \
+		install -m 0644 debian/tmp-$$package/usr/share/grub/nitrux-secure-boot.cer \
+			debian/$$package/usr/share/grub/nitrux-secure-boot.cer; \
 		test -f debian/$$package/usr/lib/grub/x86_64-efi-signed/gcdx64.efi.signed; \
+		test -f debian/$$package/usr/share/grub/nitrux-secure-boot.cer; \
 	done
 endif
 ifneq (,$(filter grub2-common,$(BUILD_PACKAGES)))

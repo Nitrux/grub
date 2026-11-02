@@ -392,8 +392,8 @@ Description: GRand Unified Bootloader, version 2 (EFI-AMD64 signed images)
     add-ons can plug in their own script rules and trigger updates by invoking
     update-grub.
  .
- This package contains GRUB images signed for use with UEFI Secure Boot on
- EFI-AMD64 systems.
+ This package contains GRUB images signed with the Nitrux Secure Boot key for
+ use with UEFI Secure Boot on EFI-AMD64 systems and Nitrux shim.
 
 Package: grub-efi-amd64-dbg
 Section: debug

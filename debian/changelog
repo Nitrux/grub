@@ -1,3 +1,9 @@
+grub2 (2.14-5+nitrux4) nitrux; urgency=medium
+
+  * Use the Nitrux EFI vendor path and ship the public Secure Boot certificate.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 02 Nov 2026 11:54:00 -0600
+
 grub2 (2.14-5+nitrux3) nitrux; urgency=medium
 
   * Include signed EFI images in grub-efi-amd64-signed.

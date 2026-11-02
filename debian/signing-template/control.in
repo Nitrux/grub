@@ -14,7 +14,7 @@ Architecture: @arch@
 Depends: grub2-common (= @version_binary@)
 Recommends: shim-signed
 Built-Using: grub2 (= @version_binary@)
-Description: GRand Unified Bootloader, version 2 (@arch@ UEFI signed by Debian)
+Description: GRand Unified Bootloader, version 2 (@arch@ UEFI signed by Nitrux)
  GRUB is a portable, powerful bootloader.  This version of GRUB is based on a
  cleaner design than its predecessors, and provides the following new features:
  .
@@ -24,6 +24,6 @@ Description: GRand Unified Bootloader, version 2 (@arch@ UEFI signed by Debian)
     add-ons can plug in their own script rules and trigger updates by invoking
     update-grub.
  .
- This package contains the binaries signed by the Debian UEFI CA to be used by
- shim-signed.
+ This package contains the binaries signed by the Nitrux Secure Boot key to be
+ used by shim-signed after the Nitrux certificate is enrolled through MOK.
 Protected: yes

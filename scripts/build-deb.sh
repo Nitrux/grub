@@ -25,13 +25,14 @@ cd "${REPO_ROOT}"
 
 : "${SB_KEY:?Set SB_KEY to the Secure Boot private key before building.}"
 : "${SB_CERT:?Set SB_CERT to the Secure Boot certificate before building.}"
+export SB_EFI_VENDOR="${SB_EFI_VENDOR:-nitrux}"
 
 mkdir -p "${BUILD_DIR}"
 rm -f -- "${BUILD_DIR}"/*.deb
 
 DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:+${DEB_BUILD_OPTIONS} }nocheck" \
 	DH_OPTIONS="${PACKAGE_OPTIONS[*]}" \
-debuild --preserve-envvar=DH_OPTIONS --preserve-envvar=SB_KEY --preserve-envvar=SB_CERT -b -uc -us
+debuild --preserve-envvar=DH_OPTIONS --preserve-envvar=SB_KEY --preserve-envvar=SB_CERT --preserve-envvar=SB_EFI_VENDOR -b -uc -us
 
 shopt -s nullglob
 PACKAGES=()
@@ -60,6 +61,11 @@ fi
 signed_package_contents="$(dpkg-deb --contents "${signed_package}")"
 if ! grep -Fq 'usr/lib/grub/x86_64-efi-signed/gcdx64.efi.signed' <<< "${signed_package_contents}"; then
 	echo "Error: grub-efi-amd64-signed does not contain gcdx64.efi.signed." >&2
+	exit 1
+fi
+
+if ! grep -Fq 'usr/share/grub/nitrux-secure-boot.cer' <<< "${signed_package_contents}"; then
+	echo "Error: grub-efi-amd64-signed does not contain the Nitrux Secure Boot certificate." >&2
 	exit 1
 fi
 

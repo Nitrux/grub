@@ -2,6 +2,12 @@
 
 This is GRUB, but built with x86-64-v3 support for Nitrux.
 
+The EFI images are signed with `SB_KEY` and `SB_CERT`, use the Nitrux EFI
+vendor path, and include the public certificate in
+`grub-efi-amd64-signed`. Keep this GRUB key pair separate from the kernel EFI
+key pair and the kernel module-signing key. Both public EFI certificates must
+be enrolled through MOK for the installed boot chain.
+
 # Licensing
 
 This repository contains files under multiple licenses.

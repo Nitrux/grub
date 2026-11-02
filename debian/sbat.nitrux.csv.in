@@ -1,0 +1,4 @@
+sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
+grub,5,Free Software Foundation,grub,@UPSTREAM_VERSION@,https://www.gnu.org/software/grub/
+grub.nitrux,1,Nitrux,grub2,@DEB_VERSION@,https://nxos.org/
+grub.peimage,2,Canonical,grub2,@DEB_VERSION@,https://salsa.debian.org/grub-team/grub/-/blob/master/debian/patches/secure-boot/efi-peimage.patch
