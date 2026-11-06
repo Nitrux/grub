@@ -26,6 +26,9 @@ jobs:
         PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
     steps:
+      - name: Install CA certificates
+        run: apt update && apt install --no-install-recommends -y ca-certificates
+
       - name: Configure snapshot APT sources
         run: |
           echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/10-no-check-valid-until
@@ -43,7 +46,7 @@ jobs:
       - name: Install checkout dependencies
         run: |
           apt update
-          apt install --no-install-recommends -y ca-certificates git nodejs
+          apt install --no-install-recommends -y git nodejs
 
       - uses: actions/checkout@v4
 
